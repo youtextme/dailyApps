@@ -86,16 +86,30 @@ def _to_loop(item: dict[str, Any]) -> LoopPlan:
             if key in role_raw:
                 role = mapped
                 break
-    criteria = [
-        ExitCriterion(
-            description=str(c.get("description") or "unspecified"),
-            check_kind=str(c.get("check_kind") or "manual"),
-            params=dict(c.get("params") or {}),
+    raw_criteria = item.get("exit_criteria") or []
+    if isinstance(raw_criteria, dict):
+        raw_criteria = [raw_criteria]
+    criteria: list[ExitCriterion] = []
+    for c in raw_criteria:
+        if isinstance(c, str):
+            criteria.append(
+                ExitCriterion(description=c, check_kind="manual", params={})
+            )
+            continue
+        if not isinstance(c, dict):
+            continue
+        params = c.get("params") or {}
+        if not isinstance(params, dict):
+            params = {}
+        criteria.append(
+            ExitCriterion(
+                description=str(c.get("description") or "unspecified"),
+                check_kind=str(c.get("check_kind") or "manual"),
+                params=params,
+            )
         )
-        for c in (item.get("exit_criteria") or [])
-    ]
     return LoopPlan(
-        index=int(item.get("index") or 0),
+        index=int(item.get("index") or 0) if str(item.get("index") or "").isdigit() or isinstance(item.get("index"), int) else 0,
         name=str(item.get("name") or "loop"),
         purpose=str(item.get("purpose") or ""),
         owner_role=role,
@@ -104,41 +118,48 @@ def _to_loop(item: dict[str, Any]) -> LoopPlan:
     )
 
 
+_KNOWN_CHECKS = {
+    "has_end_goal",
+    "has_okrs",
+    "mece_complete",
+    "quality_pass",
+    "tests_pass",
+    "shipped",
+}
+
+
+def _canonical_criteria(role: RoleName, purpose: str, check: str) -> list[ExitCriterion]:
+    if role == RoleName.OKR_CREATOR:
+        return [
+            ExitCriterion(description="Clear end goal", check_kind="has_end_goal"),
+            ExitCriterion(
+                description="At least 2 measurable key results",
+                check_kind="has_okrs",
+                params={"min": 2},
+            ),
+        ]
+    return [ExitCriterion(description=f"Complete: {purpose}", check_kind=check)]
+
+
 def _normalize_plan(loops: list[LoopPlan], prompt: str) -> list[LoopPlan]:
     """Guarantee the canonical consultative loop spine exists with real exit criteria."""
     by_role = {l.owner_role: l for l in loops if l.owner_role in {r for r, *_ in _REQUIRED}}
     normalized: list[LoopPlan] = []
     for i, (role, name, purpose, check) in enumerate(_REQUIRED, start=1):
         existing = by_role.get(role)
+        criteria = _canonical_criteria(role, purpose, check)
         if existing:
-            if not existing.exit_criteria:
-                existing.exit_criteria = [
-                    ExitCriterion(description=f"Complete: {purpose}", check_kind=check)
-                ]
-            existing.index = i
-            if role == RoleName.OKR_CREATOR and not any(
-                c.check_kind == "has_end_goal" for c in existing.exit_criteria
-            ):
-                existing.exit_criteria.insert(
-                    0,
-                    ExitCriterion(description="Clear end goal", check_kind="has_end_goal"),
-                )
+            # Keep LLM naming/purpose flavor, but never trust unknown check_kinds —
+            # tiny local models invent unverifiable criteria that brick the run.
+            known = [c for c in existing.exit_criteria if c.check_kind in _KNOWN_CHECKS]
+            existing.exit_criteria = known or criteria
             if role == RoleName.OKR_CREATOR:
-                for c in existing.exit_criteria:
-                    if c.check_kind == "has_okrs" and "min" not in c.params:
-                        c.params["min"] = 2
+                existing.exit_criteria = _canonical_criteria(role, purpose, check)
+            existing.index = i
+            existing.name = existing.name or name
+            existing.purpose = existing.purpose or f"{purpose} for: {prompt[:120]}"
             normalized.append(existing)
         else:
-            criteria = [ExitCriterion(description=f"Complete: {purpose}", check_kind=check)]
-            if role == RoleName.OKR_CREATOR:
-                criteria = [
-                    ExitCriterion(description="Clear end goal", check_kind="has_end_goal"),
-                    ExitCriterion(
-                        description="At least 2 measurable key results",
-                        check_kind="has_okrs",
-                        params={"min": 2},
-                    ),
-                ]
             normalized.append(
                 LoopPlan(
                     index=i,

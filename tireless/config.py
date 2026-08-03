@@ -9,6 +9,8 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 load_dotenv()
+# Machine-local secret store (never commit). Shared across repos on this host/snapshot.
+load_dotenv(Path.home() / ".config" / "tireless" / "secrets.env", override=False)
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 APPS_DIR = REPO_ROOT / "apps"
