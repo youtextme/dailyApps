@@ -46,8 +46,14 @@ class LocalLLM:
         *,
         temperature: float = 0.3,
         json_mode: bool = False,
+        allow_offline_fallback: bool = True,
     ) -> str:
         if self.offline or not self.available():
+            return self._offline_reply(system, user, json_mode=json_mode)
+
+        # Large HTML JSON payloads routinely starve tiny local models — go offline early.
+        if "build_html" in system and len(user) > 4000:
+            log.info("Using offline HTML builder (prompt too large for tiny local model)")
             return self._offline_reply(system, user, json_mode=json_mode)
 
         payload: dict[str, Any] = {
@@ -72,11 +78,47 @@ class LocalLLM:
             return data["choices"][0]["message"]["content"]
         except Exception as exc:  # noqa: BLE001
             log.warning("LLM call failed, using offline fallback: %s", exc)
+            if not allow_offline_fallback:
+                raise
             return self._offline_reply(system, user, json_mode=json_mode)
 
-    def chat_json(self, system: str, user: str, *, temperature: float = 0.2) -> dict[str, Any]:
-        raw = self.chat(system, user, temperature=temperature, json_mode=True)
-        return _extract_json(raw)
+    def chat_json(
+        self,
+        system: str,
+        user: str,
+        *,
+        temperature: float = 0.2,
+        retries: int = 1,
+    ) -> dict[str, Any]:
+        """Ask for JSON; repair/retry; fall back to offline structured reply if needed."""
+        last_err: Exception | None = None
+        raw = ""
+        # HTML generation: prefer one attempt then offline (tiny models time out)
+        if "build_html" in system:
+            retries = 0
+        for attempt in range(retries + 1):
+            try:
+                prompt = user if attempt == 0 else (
+                    user
+                    + "\n\nIMPORTANT: Reply with ONE valid JSON object only. "
+                    "No markdown fences, no commentary, close all strings/brackets."
+                )
+                raw = self.chat(
+                    system + "\nOutput MUST be a single valid JSON object.",
+                    prompt,
+                    temperature=max(0.0, temperature - attempt * 0.1),
+                    json_mode=True,
+                )
+                return _extract_json(raw)
+            except Exception as exc:  # noqa: BLE001
+                last_err = exc
+                log.warning("chat_json attempt %s failed: %s; raw=%s", attempt, exc, raw[:240])
+                repaired = _repair_json(raw)
+                if repaired is not None:
+                    return repaired
+        # Last resort: deterministic offline structure for this role prompt
+        log.warning("chat_json giving up (%s); using offline structured fallback", last_err)
+        return _extract_json(self._offline_reply(system, user, json_mode=True))
 
     def _headers(self) -> dict[str, str]:
         return {
@@ -332,7 +374,10 @@ def _title_from_prompt(prompt: str) -> str:
 
 
 def _extract_json(raw: str) -> dict[str, Any]:
-    raw = raw.strip()
+    raw = (raw or "").strip()
+    if raw.startswith("```"):
+        raw = re.sub(r"^```(?:json)?\s*", "", raw)
+        raw = re.sub(r"\s*```$", "", raw)
     try:
         data = json.loads(raw)
         if isinstance(data, dict):
@@ -341,10 +386,63 @@ def _extract_json(raw: str) -> dict[str, Any]:
         pass
     match = re.search(r"\{[\s\S]*\}", raw)
     if match:
-        data = json.loads(match.group(0))
-        if isinstance(data, dict):
-            return data
+        candidate = match.group(0)
+        try:
+            data = json.loads(candidate)
+            if isinstance(data, dict):
+                return data
+        except json.JSONDecodeError:
+            repaired = _repair_json(candidate)
+            if repaired is not None:
+                return repaired
     raise ValueError(f"LLM did not return JSON object: {raw[:240]}")
+
+
+def _repair_json(raw: str) -> dict[str, Any] | None:
+    """Best-effort repair for truncated / slightly invalid local-LLM JSON."""
+    if not raw:
+        return None
+    text = raw.strip()
+    if text.startswith("```"):
+        text = re.sub(r"^```(?:json)?\s*", "", text)
+        text = re.sub(r"\s*```$", "", text)
+    # Trim to outermost object if present
+    start = text.find("{")
+    if start < 0:
+        return None
+    text = text[start:]
+    # Remove trailing commas before } or ]
+    text = re.sub(r",\s*([}\]])", r"\1", text)
+    # Close unclosed quotes/brackets
+    in_str = False
+    escape = False
+    stack: list[str] = []
+    for ch in text:
+        if in_str:
+            if escape:
+                escape = False
+            elif ch == "\\":
+                escape = True
+            elif ch == '"':
+                in_str = False
+            continue
+        if ch == '"':
+            in_str = True
+        elif ch in "{[":
+            stack.append("}" if ch == "{" else "]")
+        elif ch in "}]":
+            if stack and stack[-1] == ch:
+                stack.pop()
+    if in_str:
+        text += '"'
+    while stack:
+        text += stack.pop()
+    text = re.sub(r",\s*([}\]])", r"\1", text)
+    try:
+        data = json.loads(text)
+        return data if isinstance(data, dict) else None
+    except json.JSONDecodeError:
+        return None
 
 
 def _offline_app_html(title: str, prompt: str) -> str:

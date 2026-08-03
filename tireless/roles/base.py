@@ -29,21 +29,12 @@ class Role(ABC):
 
     def think(self, ctx: RoleContext) -> str:
         """Form a working mental model before acting."""
-        system = (
-            f"You are the {self.name.value} consultant.\n"
-            f"Behavior charter:\n{self.charter}\n"
-            "Think in plain language. Do not invent fake certainty. "
-            "Name what you know, what you don't, and what must be true to exit."
+        # Keep think-step cheap for local models — act() carries the real work.
+        goal = ctx.session.objective.end_goal if ctx.session.objective else ctx.session.root_prompt
+        return (
+            f"{self.name.value}: pursue '{goal[:160]}' with charter discipline; "
+            f"exit only when criteria are evidenced. Feedback={ctx.session.feedback_history[-1:]}"
         )
-        user = (
-            f"Objective id: {ctx.session.objective_id}\n"
-            f"Root prompt: {ctx.session.root_prompt}\n"
-            f"Feedback history: {ctx.session.feedback_history}\n"
-            f"Context digest: {ctx.session.context_digest}\n"
-            f"Current objective spec: {ctx.session.objective.model_dump() if ctx.session.objective else None}\n"
-            "What are you trying to accomplish in this turn, and what would prove it?"
-        )
-        return self.llm.chat(system, user, temperature=0.2)
 
     @abstractmethod
     def act(self, ctx: RoleContext) -> dict[str, Any]:

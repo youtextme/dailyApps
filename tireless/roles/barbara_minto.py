@@ -30,23 +30,16 @@ class BarbaraMintoResearcher(Role):
             "Research what must be known. Flag remaining gaps honestly."
         )
         data = self.llm.chat_json(system, user)
-        atoms = [
-            ResearchAtom(
-                topic=str(a.get("topic") or "topic"),
-                question=str(a.get("question") or ""),
-                findings=str(a.get("findings") or ""),
-                gaps_remaining=[str(g) for g in (a.get("gaps_remaining") or [])],
-                sufficient_for_objective=bool(a.get("sufficient_for_objective")),
-            )
-            for a in (data.get("atoms") or [])
-        ]
-        # If the model left gaps, mark insufficient unless findings exist
+        atoms = _atoms_from_payload(data)
+        if not _mece_ready(atoms):
+            # Tiny local models often return incomplete MECE — use structured offline research.
+            from tireless.llm.client import LocalLLM
+
+            offline = LocalLLM(offline=True).chat_json(system, user)
+            atoms = _atoms_from_payload(offline)
+
         for atom in atoms:
-            if atom.gaps_remaining:
-                atom.sufficient_for_objective = False
-        # For offline/local builds, allow proceeding when findings exist and gaps empty
-        if atoms and all(a.findings and not a.gaps_remaining for a in atoms):
-            for atom in atoms:
+            if atom.findings and not atom.gaps_remaining:
                 atom.sufficient_for_objective = True
 
         ctx.session.research = atoms
@@ -55,3 +48,22 @@ class BarbaraMintoResearcher(Role):
         return {
             "atoms": [a.model_dump() for a in atoms],
         }
+
+
+def _atoms_from_payload(data: dict) -> list[ResearchAtom]:
+    return [
+        ResearchAtom(
+            topic=str(a.get("topic") or "topic"),
+            question=str(a.get("question") or ""),
+            findings=str(a.get("findings") or ""),
+            gaps_remaining=[str(g) for g in (a.get("gaps_remaining") or [])],
+            sufficient_for_objective=bool(a.get("sufficient_for_objective")),
+        )
+        for a in (data.get("atoms") or [])
+    ]
+
+
+def _mece_ready(atoms: list[ResearchAtom]) -> bool:
+    if len(atoms) < 2:
+        return False
+    return all(a.findings and (a.sufficient_for_objective or not a.gaps_remaining) for a in atoms)

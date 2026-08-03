@@ -139,12 +139,15 @@ class ObjectiveLoopEngine:
 
         # Special: after UX build, ship early so production tests can see files
         if role_name == RoleName.UX_CX_BUILDER and session.artifacts.get("html"):
-            ship_info = ship_session(session)
-            artifacts.update(ship_info)
-            # persist narrative incrementally
-            gist = persist_gist(session, build_gist_markdown(session))
-            artifacts["gist_url"] = gist.url
-            artifacts["gist_path"] = gist.local_path
+            try:
+                ship_info = ship_session(session)
+                artifacts.update(ship_info)
+                gist = persist_gist(session, build_gist_markdown(session))
+                artifacts["gist_url"] = gist.url
+                artifacts["gist_path"] = gist.local_path
+            except Exception as exc:  # noqa: BLE001
+                log.warning("ship after UX failed: %s", exc)
+                artifacts["ship_error"] = str(exc)
 
         if role_name == RoleName.SLACK_COMMUNICATOR:
             if not session.app_url and session.artifacts.get("html"):

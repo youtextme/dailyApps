@@ -40,7 +40,7 @@ class LLMConfig:
             base_url=os.getenv("TIRELESS_LLM_BASE_URL", "http://127.0.0.1:11434/v1").rstrip("/"),
             api_key=os.getenv("TIRELESS_LLM_API_KEY", "local"),
             model=os.getenv("TIRELESS_LLM_MODEL", "llama3.2"),
-            timeout_s=float(os.getenv("TIRELESS_LLM_TIMEOUT", "120")),
+            timeout_s=float(os.getenv("TIRELESS_LLM_TIMEOUT", "90")),
         )
 
 

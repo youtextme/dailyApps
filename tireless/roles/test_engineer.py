@@ -34,22 +34,11 @@ class TestEngineer(Role):
             "Design the minimum set of tests that prove customer success."
         )
         data = self.llm.chat_json(system, user)
-        designed = []
-        for key, kind in (
-            ("unit_tests", "unit"),
-            ("integration_tests", "integration"),
-            ("production_tests", "production"),
-            ("cx_tests", "cx"),
-        ):
-            for item in data.get(key) or []:
-                designed.append(
-                    TestCase(
-                        name=str(item.get("name") or "test"),
-                        kind=str(item.get("kind") or kind),
-                        steps=[str(s) for s in (item.get("steps") or [])],
-                        expected=str(item.get("expected") or ""),
-                    )
-                )
+        designed = _design_tests(data)
+        if len(designed) < 3:
+            from tireless.llm.client import LocalLLM
+
+            designed = _design_tests(LocalLLM(offline=True).chat_json(system, user))
 
         html = str(ctx.session.artifacts.get("html") or "")
         slug = ctx.session.slug
@@ -66,6 +55,36 @@ class TestEngineer(Role):
             "passed": sum(1 for t in executed if t.result == "pass"),
             "failed": sum(1 for t in executed if t.result != "pass"),
         }
+
+
+def _design_tests(data: dict) -> list[TestCase]:
+    designed: list[TestCase] = []
+    for key, kind in (
+        ("unit_tests", "unit"),
+        ("integration_tests", "integration"),
+        ("production_tests", "production"),
+        ("cx_tests", "cx"),
+    ):
+        for item in data.get(key) or []:
+            if isinstance(item, str):
+                designed.append(
+                    TestCase(name=item[:80] or "test", kind=kind, steps=[item], expected="pass")
+                )
+                continue
+            if not isinstance(item, dict):
+                continue
+            steps = item.get("steps") or []
+            if isinstance(steps, str):
+                steps = [steps]
+            designed.append(
+                TestCase(
+                    name=str(item.get("name") or "test"),
+                    kind=str(item.get("kind") or kind),
+                    steps=[str(s) for s in steps],
+                    expected=str(item.get("expected") or ""),
+                )
+            )
+    return designed
 
 
 def _execute(test: TestCase, html: str, app_dir: Path | None) -> TestCase:
