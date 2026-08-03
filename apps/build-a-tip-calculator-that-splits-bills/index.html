@@ -3,56 +3,127 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Build a tip calculator that splits bills</title>
+<title>Tip calculator — split bills</title>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet"/>
 <style>
-  :root { --ink:#1c1917; --accent:#0f766e; }
+  :root {
+    --ink:#1c1917; --muted:#57534e; --accent:#0f766e; --panel:#fffbeb;
+    --bg1:#99f6e4; --bg2:#fed7aa; --bg3:#fffbeb; --btn:#fff; --btn-border:#d6d3d1;
+  }
+  html[data-theme="dark"] {
+    --ink:#f5f5f4; --muted:#a8a29e; --accent:#2dd4bf; --panel:#1c1917;
+    --bg1:#115e59; --bg2:#7c2d12; --bg3:#0c0a09; --btn:#292524; --btn-border:#44403c;
+  }
   * { box-sizing: border-box; }
   body {
-    margin: 0; min-height: 100vh; color: var(--ink);
-    font-family: "Source Sans 3", Georgia, serif;
+    margin:0; min-height:100vh; color:var(--ink);
+    font-family:"Source Sans 3", Georgia, serif;
     background:
-      radial-gradient(1200px 600px at 10% -10%, #99f6e4 0%, transparent 55%),
-      radial-gradient(900px 500px at 100% 0%, #fed7aa 0%, transparent 50%),
-      #fffbeb;
+      radial-gradient(1200px 600px at 10% -10%, var(--bg1) 0%, transparent 55%),
+      radial-gradient(900px 500px at 100% 0%, var(--bg2) 0%, transparent 50%),
+      var(--bg3);
   }
-  header { padding: clamp(3rem, 10vw, 6rem) 1.5rem 1rem; }
+  header { padding: clamp(2.5rem, 8vw, 5rem) 1.5rem 0.5rem; }
   h1 {
     font-family: Fraunces, Georgia, serif;
-    font-size: clamp(2.75rem, 8vw, 5rem);
-    line-height: 1.05; margin: 0 0 0.75rem;
+    font-size: clamp(2.5rem, 7vw, 4.5rem);
+    line-height:1.05; margin:0 0 0.75rem;
   }
-  .lead { max-width: 28rem; font-size: 1.125rem; }
-  main { padding: 1rem 1.5rem 4rem; max-width: 28rem; }
-  label { display: block; margin: 1rem 0 0.35rem; font-weight: 600; }
-  input, button {
-    width: 100%; font: inherit; padding: 0.85rem 1rem;
-    border-radius: 0.35rem; border: 1px solid #d6d3d1;
+  .lead { max-width:32rem; font-size:1.125rem; color:var(--muted); }
+  .toolbar { display:flex; gap:0.75rem; flex-wrap:wrap; margin:1rem 0 0; }
+  #theme-toggle {
+    font:inherit; font-weight:600; padding:0.85rem 1.25rem;
+    border-radius:0.5rem; border:1px solid var(--btn-border);
+    background:var(--btn); color:var(--ink); cursor:pointer;
   }
-  button {
-    margin-top: 1rem; background: var(--accent); color: #fff;
-    border: 0; cursor: pointer; font-weight: 600;
+  main {
+    margin:1rem 1.5rem 4rem; padding:1.5rem; max-width:28rem;
+    background:color-mix(in srgb, var(--panel) 88%, transparent);
+    border-radius:1rem; border:1px solid var(--btn-border);
   }
-  button:hover { filter: brightness(1.05); }
-  #result { margin-top: 1.25rem; min-height: 1.5rem; }
+  label { display:block; margin:1rem 0 0.35rem; font-weight:600; }
+  input[type="number"] {
+    width:100%; font:inherit; padding:0.95rem 1rem;
+    border-radius:0.5rem; border:1px solid var(--btn-border);
+    background:var(--btn); color:var(--ink);
+  }
+  .tip-row { display:flex; gap:0.75rem; flex-wrap:wrap; margin-top:0.75rem; }
+  .tip-btn {
+    flex:1 1 30%; min-height:3.75rem; font:inherit; font-size:1.35rem; font-weight:700;
+    padding:1.1rem 1.25rem; border-radius:0.65rem; border:2px solid var(--accent);
+    background:var(--btn); color:var(--ink); cursor:pointer;
+  }
+  .tip-btn[aria-pressed="true"] { background:var(--accent); color:#fff; }
+  #go {
+    width:100%; margin-top:1.25rem; font:inherit; font-weight:700;
+    padding:1rem 1.25rem; border:0; border-radius:0.65rem;
+    background:var(--accent); color:#fff; cursor:pointer; font-size:1.1rem;
+  }
+  #result { margin-top:1.25rem; min-height:1.5rem; font-size:1.15rem; }
+  #feedback-note {
+    margin:1rem 1.5rem; padding:0.75rem 1rem; border-left:4px solid var(--accent);
+    background:color-mix(in srgb, var(--accent) 12%, var(--panel));
+    font-family:Georgia, serif;
+  }
 </style>
 </head>
 <body data-dailyapps-ready="1">
+<aside id="feedback-note" data-feedback="1">
+  <strong>Updated from feedback:</strong> make the tip % buttons larger and add a dark mode toggle
+</aside>
 <header>
-  <h1>Build a tip calculator that splits bills</h1>
-  <p class="lead">Built from a Slack objective via local LLMs. Interactive and shareable.</p>
+  <h1>Tip</h1>
+  <p class="lead">Split the bill. Larger tip percent buttons and a dark mode toggle.</p>
+  <div class="toolbar">
+    <button id="theme-toggle" type="button" aria-pressed="false">Dark mode</button>
+  </div>
 </header>
 <main>
-  <label for="input">Your input</label>
-  <input id="input" type="text" placeholder="Type something" autocomplete="off"/>
-  <button id="go" type="button">Run</button>
+  <label for="bill">Bill amount</label>
+  <input id="bill" type="number" min="0" step="0.01" value="86.40"/>
+  <label for="people">People</label>
+  <input id="people" type="number" min="1" step="1" value="3"/>
+  <label>Tip percent</label>
+  <div class="tip-row" role="group" aria-label="Tip percent">
+    <button class="tip-btn" type="button" data-tip="15" aria-pressed="false">15%</button>
+    <button class="tip-btn" type="button" data-tip="18" aria-pressed="true">18%</button>
+    <button class="tip-btn" type="button" data-tip="20" aria-pressed="false">20%</button>
+  </div>
+  <button id="go" type="button">Split bill</button>
   <p id="result" aria-live="polite"></p>
 </main>
 <script>
-  document.getElementById("go").addEventListener("click", () => {
-    const v = document.getElementById("input").value.trim() || "ready";
-    document.getElementById("result").textContent = "Result: " + v;
+(function() {
+  let tip = 18;
+  const tips = document.querySelectorAll(".tip-btn");
+  tips.forEach(btn => btn.addEventListener("click", () => {
+    tip = Number(btn.dataset.tip);
+    tips.forEach(b => b.setAttribute("aria-pressed", b === btn ? "true" : "false"));
+    calc();
+  }));
+  const themeBtn = document.getElementById("theme-toggle");
+  themeBtn.addEventListener("click", () => {
+    const dark = document.documentElement.getAttribute("data-theme") !== "dark";
+    document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+    themeBtn.setAttribute("aria-pressed", dark ? "true" : "false");
+    themeBtn.textContent = dark ? "Light mode" : "Dark mode";
   });
+  function calc() {
+    const bill = Number(document.getElementById("bill").value || 0);
+    const people = Math.max(1, Number(document.getElementById("people").value || 1));
+    const tipAmt = bill * (tip / 100);
+    const total = bill + tipAmt;
+    const each = total / people;
+    document.getElementById("result").textContent =
+      "Tip " + tip + "%: $" + tipAmt.toFixed(2) +
+      " · Total $" + total.toFixed(2) +
+      " · Each $" + each.toFixed(2);
+  }
+  document.getElementById("go").addEventListener("click", calc);
+  document.getElementById("bill").addEventListener("input", calc);
+  document.getElementById("people").addEventListener("input", calc);
+  calc();
+})();
 </script>
 </body>
 </html>
