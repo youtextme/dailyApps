@@ -3,3 +3,10 @@ Thumbs.db
 *.log
 .idea/
 .vscode/
+
+# Secrets — never commit real values
+.env
+.env.local
+.env.*.local
+.envrc
+secrets/
