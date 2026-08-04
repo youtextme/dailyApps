@@ -1,175 +1,151 @@
-**Governing thought**
-The interactive HTML page will serve as a self-contained, comprehensive curriculum for Class 4 students, offering an overview of subjects and their respective books without external dependencies.
+**Governing thought**  
+The interactive HTML page will represent a self-contained Class 4 case school curriculum, featuring expressive typography and integrating all content and books by subject without external API calls or third-party services.
 
 **MECE buckets**
-1. Document Structure and Metadata
-2. Typography and Styling
+1. Structure and Metadata
+2. Expressive Typography
 3. Interactive Elements
-4. Curriculum Content Organization
-5. Integration of Books
+4. Curriculum Content Integration
+5. Styling Guidelines
 
 **Progression**
-- **Document Structure and Metadata**: Ensuring the document adheres to semantic HTML5 standards with proper metadata.
-- **Typography and Styling**: Utilizing expressive typography from Google Fonts without prohibited colors or fonts.
-- **Interactive Elements**: Adding buttons and inputs using JavaScript for engaging user interaction.
-- **Curriculum Content Organization**: Creating a structured layout that presents all necessary curriculum details clearly.
-- **Integration of Books**: Embedding books directly within the page to provide instant access.
+1. **Structure and Metadata**: Ensuring the HTML document is well-structured with proper metadata tags and attributes as mandated by the rules.
+   - Begin with `<!DOCTYPE html>`.
+   - Include `<meta name="viewport" content="width=device-width, initial-scale=1.0">` for responsive design.
+   - Set `html lang` to "en" for English language support.
+   - Add `data-dailyapps-ready` attribute to the `<body>` tag.
+2. **Expressive Typography**: Incorporate unique typography that avoids forbidden fonts and styles.
+   - Use Fraunces for headings and Source Sans 3 for body text via Google Fonts.
+   - Load these fonts within a `<link>` tag in the document head section.
+3. **Interactive Elements**: Implement essential interactive components with JavaScript to enhance user engagement.
+   - Add buttons or input fields for interactivity.
+   - Write embedded JavaScript that responds to user interactions (e.g., toggling visibility, handling clicks).
+4. **Curriculum Content Integration**: Embed all necessary curriculum materials directly within the HTML document.
+   - Structure the page into subjects, each with associated书籍 and content.
+   - Use semantic HTML elements like `<section>` for subjects and `<article>` for individual books or topics.
+5. **Styling Guidelines**: Adhere to strict styling rules provided in the prompt, ensuring no violation of forbidden styles or colors.
 
-**Mermaid diagram**
+**Mermaid diagram(s)**
 ```mermaid
 graph TD;
-    A[Document Structure] --> B[<!DOCTYPE html>];
-    A --> C[Viewport Meta];
-    A --> D[Html Lang];
-    E[Typography and Styling] --> F[Fraunces + Source Sans 3 from Google Fonts];
-    G[Interactive Elements] --> H[Buttons/Inputs];
-    G --> I[JavaScript for Interaction];
-    J[Curriculum Content Organization] --> K[Hierarchical Layout];
-    J --> L[Hero-Level Brand Name];
-    M[Integration of Books] --> N[Embed Directly within Page];
+    A[Start] --> B[Structure HTML Document];
+    B --> C[Add Metadata Tags];
+    C --> D[Include Viewport Meta];
+    C --> E[Set Html Lang to en];
+    C --> F[Add Data-dailyapps-ready Attribute];
+    B --> G[Load Typography Fonts];
+    G --> H[Use Fraunces & Source Sans 3 via Google Fonts];
+    B --> I[Integrate Interactive Elements];
+    I --> J[Insert Button/Input Fields];
+    I --> K[Write Embedded JavaScript for Interactivity];
+    B --> L[Embed Curriculum Content];
+    L --> M[Structure by Subjects];
+    L --> N[Integrate Books & Content Directly];
+    B --> O[Apply Styling Guidelines];
+    O --> P[Avoid Purple/Indigo Gradients and #F4F1EA Cream];
+    O --> Q[Use Expressive Typography Only];
 ```
 
 **Visual concepts**
-IMAGE: Self-contained Curriculum Page Layout
-IMAGE: Interactive Button and Input Example
-
-Below is the complete HTML document adhering to all specified requirements:
+IMAGE: Curriculum Layout Diagram (Show a wireframe or diagram of how the curriculum content is organized on the page, emphasizing the hero-level signal for brand name and avoidance of card grids in the hero section.)
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Class 4 Curriculum</title>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@900&family=Source+Sans+3:wght@400;700&display=swap" rel="stylesheet">
-<style>
-    body {
-        font-family: 'Source Sans 3', sans-serif;
-        margin: 0;
-        padding: 2em;
-        background-color: #f8f9fa;
-        data-dailyapps-ready: '';
-    }
-    h1, h2 {
-        font-family: 'Fraunces', serif;
-        text-align: center;
-        color: #343a40;
-    }
-    .hero {
-        padding: 2em;
-        background-color: #e9ecef;
-        margin-bottom: 2em;
-        border-radius: 10px;
-        text-align: center;
-    }
-    .curriculum-section {
-        margin-bottom: 2em;
-    }
-    .book-list {
-        list-style-type: none;
-        padding: 0;
-    }
-    .book-list li {
-        background-color: #fff;
-        border: 1px solid #dee2e6;
-        margin-top: .5rem;
-        padding: 1em;
-        border-radius: 4px;
-    }
-    button {
-        display: inline-block;
-        padding: 0.7em 1.4em;
-        margin-bottom: 0;
-        font-size: 1rem;
-        font-weight: 400;
-        text-align: center;
-        vertical-align: middle;
-        cursor: pointer;
-        background-color: #ff6b6b;
-        color: white;
-        border: none;
-        border-radius: .25rem;
-    }
-    input[type="text"] {
-        width: calc(100% - 3.4rem);
-        padding: 0.7em 1.4em;
-        margin-top: 1rem;
-        background-color: #fff;
-        border: 1px solid #dee2e6;
-        border-radius: .25rem;
-    }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class 4 Case School Curriculum</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@900&family=Source+Sans+3:wght@400&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Source Sans 3', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f9f9f9;
+        }
+        h1, h2 {
+            font-family: 'Fraunces', serif;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+        }
+        section {
+            padding: 30px;
+            border-bottom: 1px solid #ccc;
+        }
+        article {
+            margin-bottom: 15px;
+        }
+    </style>
 </head>
-<body data-dailyapps-ready="">
-<div class="hero">
-    <h1>Class 4 Curriculum Overview</h1>
-    <p>Your one-stop resource for all Class 4 subjects and materials.</p>
-</div>
+<body data-dailyapps-ready="true">
+    <header class="container">
+        <h1>Class 4 Case School Curriculum</h1>
+        <p>Welcome to the Class 4 curriculum. Here you will find all your course materials and books integrated directly within this page.</p>
+    </header>
 
-<div class="curriculum-section">
-    <h2>English</h2>
-    <ul class="book-list">
-        <li>
-            <strong>Textbook:</strong> "Class 4 English"
-            <button onclick="alert('View Book')">View Book</button>
-        </li>
-    </ul>
-</div>
+    <main class="container">
+        <section id="mathematics">
+            <h2>Mathematics</h2>
+            <article>
+                <h3>Book: Algebra Fundamentals</h3>
+                <p>This book provides an in-depth look at algebraic concepts and problem-solving skills. It includes numerous exercises and real-world applications.</p>
+            </article>
+        </section>
 
-<div class="curriculum-section">
-    <h2>Mathematics</h2>
-    <ul class="book-list">
-        <li>
-            <strong>Textbook:</strong> "Mathematics for Class 4"
-            <button onclick="alert('View Book')">View Book</button>
-        </li>
-        <li>
-            <strong>Workbook:</strong> "Class 4 Math Workbook"
-            <button onclick="alert('View Workbook')">View Workbook</button>
-        </li>
-    </ul>
-</div>
+        <section id="science">
+            <h2>Science</h2>
+            <article>
+                <h3>Book: Biology Basics</h3>
+                <p>This book introduces the fundamental principles of biology, including cell structure, genetics, and ecology.</p>
+            </article>
+        </section>
 
-<div class="curriculum-section">
-    <h2>Science</h2>
-    <ul class="book-list">
-        <li>
-            <strong>Textbook:</strong> "Class 4 Science"
-            <button onclick="alert('View Book')">View Book</button>
-        </li>
-    </ul>
-</div>
+        <section id="history">
+            <h2>History</h2>
+            <article>
+                <h3>Book: World History Since 1500</h3>
+                <p>Covers major events and figures from the Renaissance to modern times, focusing on global interactions and cultural exchanges.</p>
+            </article>
+        </section>
 
-<div class="curriculum-section">
-    <h2>Social Studies</h2>
-    <ul class="book-list">
-        <li>
-            <strong>Textbook:</strong> "Class 4 Social Studies"
-            <button onclick="alert('View Book')">View Book</button>
-        </li>
-    </ul>
-</div>
+        <section id="literature">
+            <h2>Literature</h2>
+            <article>
+                <h3>Book: Classic Literature Collection</h3>
+                <p>This collection features famous works by renowned authors including Shakespeare, Austen, and Twain.</p>
+            </article>
+        </section>
 
-<div class="curriculum-section">
-    <h2>Hindi</h2>
-    <ul class="book-list">
-        <li>
-            <strong>Textbook:</strong> "Class 4 Hindi"
-            <button onclick="alert('View Book')">View Book</button>
-        </li>
-    </ul>
-</div>
+        <section id="technology">
+            <h2>Technology</h2>
+            <article>
+                <h3>Book: Introduction to Programming</h3>
+                <p>This book serves as an introduction to programming with Python. It covers basic syntax, algorithms, and data structures.</p>
+            </article>
+        </section>
+    </main>
 
-<script>
-// Sample JavaScript to add interactivity
-document.querySelectorAll('button').forEach(button => {
-    button.addEventListener('click', function() {
-        alert(this.previousElementSibling.innerText);
-    });
-});
-</script>
+    <footer class="container">
+        <p>&copy; 2023 Class 4 Case School Curriculum. All rights reserved.</p>
+    </footer>
 
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const sections = document.querySelectorAll('section');
+            
+            sections.forEach(section => {
+                section.addEventListener('click', () => {
+                    alert(`You clicked on ${section.querySelector('h2').innerText}`);
+                });
+            });
+        });
+    </script>
 </body>
 </html>
-
-This HTML document meets all the requirements and serves as a functional, interactive curriculum page for Class 4 students. The JavaScript code adds basic interactivity without external dependencies, while the CSS ensures expressive typography is used as specified.
