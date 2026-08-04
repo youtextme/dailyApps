@@ -1,0 +1,13 @@
+# Keep secrets out of Cursor Agent, Tab, and inline edit context.
+.env
+.env.*
+!.env.example
+.envrc
+**/.env
+**/.env.*
+!**/.env.example
+**/secrets/
+**/*.pem
+**/*.key
+**/*credentials*
+**/*secret*
