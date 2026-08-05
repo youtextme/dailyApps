@@ -4,17 +4,37 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>dailyApps</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet"/>
 <style>
-  body { font-family: Georgia, serif; max-width: 40rem; margin: 3rem auto; padding: 0 1.25rem;
-    background: linear-gradient(180deg, #fff7ed, #ecfeff); color: #1c1917; }
-  h1 { font-size: clamp(2.5rem, 7vw, 4rem); margin-bottom: 0.25rem; }
-  a { color: #0f766e; }
+  :root { --ink:#1c1917; --muted:#57534e; --accent:#0f766e; }
+  body {
+    margin:0; min-height:100vh; color:var(--ink);
+    font-family:"Source Sans 3", Georgia, serif;
+    background:
+      radial-gradient(900px 480px at 0% 0%, #99f6e4 0%, transparent 55%),
+      radial-gradient(800px 420px at 100% 0%, #fed7aa 0%, transparent 50%),
+      #fffbeb;
+  }
+  main { max-width:40rem; margin:0 auto; padding: clamp(2.5rem, 8vw, 5rem) 1.25rem; }
+  h1 {
+    font-family: Fraunces, Georgia, serif;
+    font-size: clamp(2.5rem, 7vw, 4rem);
+    margin:0 0 0.35rem; line-height:1.05;
+  }
+  p { color:var(--muted); font-size:1.125rem; }
+  a { color:var(--accent); }
+  ul { padding-left:1.1rem; line-height:1.8; }
 </style>
 </head>
 <body>
-<header><h1>dailyApps</h1><p>Interactive apps shipped from Slack via local LLMs.</p></header>
-<ul>
-<li><a href="apps/build-a-tip-calculator-that-splits-bills/">build-a-tip-calculator-that-splits-bills</a></li>
-</ul>
+<main>
+  <header>
+    <h1>dailyApps</h1>
+    <p>Interactive apps shipped from Slack via stateful local-LLM loops.</p>
+  </header>
+  <ul>
+<li><a href="apps/build-a-tip-calculator-that-splits-bills/">Build a tip calculator that splits bills</a></li>
+  </ul>
+</main>
 </body>
 </html>
