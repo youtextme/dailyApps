@@ -1,151 +1,58 @@
-**Governing thought**  
-The interactive HTML page will represent a self-contained Class 4 case school curriculum, featuring expressive typography and integrating all content and books by subject without external API calls or third-party services.
-
-**MECE buckets**
-1. Structure and Metadata
-2. Expressive Typography
-3. Interactive Elements
-4. Curriculum Content Integration
-5. Styling Guidelines
-
-**Progression**
-1. **Structure and Metadata**: Ensuring the HTML document is well-structured with proper metadata tags and attributes as mandated by the rules.
-   - Begin with `<!DOCTYPE html>`.
-   - Include `<meta name="viewport" content="width=device-width, initial-scale=1.0">` for responsive design.
-   - Set `html lang` to "en" for English language support.
-   - Add `data-dailyapps-ready` attribute to the `<body>` tag.
-2. **Expressive Typography**: Incorporate unique typography that avoids forbidden fonts and styles.
-   - Use Fraunces for headings and Source Sans 3 for body text via Google Fonts.
-   - Load these fonts within a `<link>` tag in the document head section.
-3. **Interactive Elements**: Implement essential interactive components with JavaScript to enhance user engagement.
-   - Add buttons or input fields for interactivity.
-   - Write embedded JavaScript that responds to user interactions (e.g., toggling visibility, handling clicks).
-4. **Curriculum Content Integration**: Embed all necessary curriculum materials directly within the HTML document.
-   - Structure the page into subjects, each with associated书籍 and content.
-   - Use semantic HTML elements like `<section>` for subjects and `<article>` for individual books or topics.
-5. **Styling Guidelines**: Adhere to strict styling rules provided in the prompt, ensuring no violation of forbidden styles or colors.
-
-**Mermaid diagram(s)**
-```mermaid
-graph TD;
-    A[Start] --> B[Structure HTML Document];
-    B --> C[Add Metadata Tags];
-    C --> D[Include Viewport Meta];
-    C --> E[Set Html Lang to en];
-    C --> F[Add Data-dailyapps-ready Attribute];
-    B --> G[Load Typography Fonts];
-    G --> H[Use Fraunces & Source Sans 3 via Google Fonts];
-    B --> I[Integrate Interactive Elements];
-    I --> J[Insert Button/Input Fields];
-    I --> K[Write Embedded JavaScript for Interactivity];
-    B --> L[Embed Curriculum Content];
-    L --> M[Structure by Subjects];
-    L --> N[Integrate Books & Content Directly];
-    B --> O[Apply Styling Guidelines];
-    O --> P[Avoid Purple/Indigo Gradients and #F4F1EA Cream];
-    O --> Q[Use Expressive Typography Only];
-```
-
-**Visual concepts**
-IMAGE: Curriculum Layout Diagram (Show a wireframe or diagram of how the curriculum content is organized on the page, emphasizing the hero-level signal for brand name and avoidance of card grids in the hero section.)
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Class 4 Case School Curriculum</title>
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@900&family=Source+Sans+3:wght@400&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Source Sans 3', sans-serif;
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            line-height: 1.6;
-            color: #333;
-            background-color: #f9f9f9;
-        }
-        h1, h2 {
-            font-family: 'Fraunces', serif;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .container {
-            width: 80%;
-            margin: auto;
-        }
-        section {
-            padding: 30px;
-            border-bottom: 1px solid #ccc;
-        }
-        article {
-            margin-bottom: 15px;
-        }
-    </style>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Class 4 case school curriculum in a page entire </title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+  :root { --ink:#1c1917; --accent:#0f766e; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; color: var(--ink);
+    font-family: "Source Sans 3", Georgia, serif;
+    background:
+      radial-gradient(1200px 600px at 10% -10%, #99f6e4 0%, transparent 55%),
+      radial-gradient(900px 500px at 100% 0%, #fed7aa 0%, transparent 50%),
+      #fffbeb;
+  }
+  header { padding: clamp(3rem, 10vw, 6rem) 1.5rem 1rem; }
+  h1 {
+    font-family: Fraunces, Georgia, serif;
+    font-size: clamp(2.75rem, 8vw, 5rem);
+    line-height: 1.05; margin: 0 0 0.75rem;
+  }
+  .lead { max-width: 28rem; font-size: 1.125rem; }
+  main { padding: 1rem 1.5rem 4rem; max-width: 28rem; }
+  label { display: block; margin: 1rem 0 0.35rem; font-weight: 600; }
+  input, button {
+    width: 100%; font: inherit; padding: 0.85rem 1rem;
+    border-radius: 0.35rem; border: 1px solid #d6d3d1;
+  }
+  button {
+    margin-top: 1rem; background: var(--accent); color: #fff;
+    border: 0; cursor: pointer; font-weight: 600;
+  }
+  button:hover { filter: brightness(1.05); }
+  #result { margin-top: 1.25rem; min-height: 1.5rem; }
+</style>
 </head>
-<body data-dailyapps-ready="true">
-    <header class="container">
-        <h1>Class 4 Case School Curriculum</h1>
-        <p>Welcome to the Class 4 curriculum. Here you will find all your course materials and books integrated directly within this page.</p>
-    </header>
-
-    <main class="container">
-        <section id="mathematics">
-            <h2>Mathematics</h2>
-            <article>
-                <h3>Book: Algebra Fundamentals</h3>
-                <p>This book provides an in-depth look at algebraic concepts and problem-solving skills. It includes numerous exercises and real-world applications.</p>
-            </article>
-        </section>
-
-        <section id="science">
-            <h2>Science</h2>
-            <article>
-                <h3>Book: Biology Basics</h3>
-                <p>This book introduces the fundamental principles of biology, including cell structure, genetics, and ecology.</p>
-            </article>
-        </section>
-
-        <section id="history">
-            <h2>History</h2>
-            <article>
-                <h3>Book: World History Since 1500</h3>
-                <p>Covers major events and figures from the Renaissance to modern times, focusing on global interactions and cultural exchanges.</p>
-            </article>
-        </section>
-
-        <section id="literature">
-            <h2>Literature</h2>
-            <article>
-                <h3>Book: Classic Literature Collection</h3>
-                <p>This collection features famous works by renowned authors including Shakespeare, Austen, and Twain.</p>
-            </article>
-        </section>
-
-        <section id="technology">
-            <h2>Technology</h2>
-            <article>
-                <h3>Book: Introduction to Programming</h3>
-                <p>This book serves as an introduction to programming with Python. It covers basic syntax, algorithms, and data structures.</p>
-            </article>
-        </section>
-    </main>
-
-    <footer class="container">
-        <p>&copy; 2023 Class 4 Case School Curriculum. All rights reserved.</p>
-    </footer>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const sections = document.querySelectorAll('section');
-            
-            sections.forEach(section => {
-                section.addEventListener('click', () => {
-                    alert(`You clicked on ${section.querySelector('h2').innerText}`);
-                });
-            });
-        });
-    </script>
+<body data-dailyapps-ready="1">
+<header>
+  <h1>Class 4 case school curriculum in a page entire </h1>
+  <p class="lead">Built from a Slack objective via local LLMs. Interactive and shareable.</p>
+</header>
+<main>
+  <label for="input">Your input</label>
+  <input id="input" type="text" placeholder="Type something" autocomplete="off"/>
+  <button id="go" type="button">Run</button>
+  <p id="result" aria-live="polite"></p>
+</main>
+<script>
+  document.getElementById("go").addEventListener("click", () => {
+    const v = document.getElementById("input").value.trim() || "ready";
+    document.getElementById("result").textContent = "Result: " + v;
+  });
+</script>
 </body>
 </html>
