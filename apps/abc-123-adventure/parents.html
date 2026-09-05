@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Progress — ABC &amp; 123 Adventure</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; background: #f6f8fb; color: #23303e; }
+  .wrap { max-width: 640px; margin: 0 auto; padding: 16px; }
+  h1 { font-size: 22px; margin: 4px 0 12px; }
+  .back { text-decoration: none; color: #4a68d9; font-size: 14px; }
+  .bigrow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 14px; }
+  .stat { background: #fff; border-radius: 14px; padding: 12px 8px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+  .stat .v { font-size: 24px; font-weight: 700; }
+  .stat .l { font-size: 12px; color: #6b7a8c; }
+  section { background: #fff; border-radius: 14px; padding: 14px; margin-bottom: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+  h2 { font-size: 15px; margin: 0 0 10px; color: #44536b; }
+  .lgrid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+  .ngrid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; }
+  .cell { border-radius: 8px; text-align: center; padding: 8px 0; font-weight: 700; font-size: 15px; background: #eef1f5; color: #9aa7b5; }
+  .cell.learning { background: #ffe9c2; color: #9a6a12; }
+  .cell.mastered { background: #c9f2d0; color: #1d7a35; }
+  .legend { display: flex; gap: 14px; font-size: 12px; color: #6b7a8c; margin-top: 8px; }
+  .dot { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 4px; vertical-align: middle; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { background: #e8edff; color: #3a55c9; border-radius: 999px; padding: 5px 12px; font-size: 13px; font-weight: 600; }
+  .muted { color: #8a97a6; font-size: 13px; }
+  ul.tips { margin: 0; padding-left: 18px; }
+  ul.tips li { margin-bottom: 8px; font-size: 14px; line-height: 1.45; }
+  .stickers { font-size: 26px; letter-spacing: 4px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← Back to the game</a>
+  <h1>📊 Progress at a glance</h1>
+
+  <div class="bigrow">
+    <div class="stat"><div class="v" id="today">–</div><div class="l">Today</div></div>
+    <div class="stat"><div class="v" id="total">–</div><div class="l">All time</div></div>
+    <div class="stat"><div class="v" id="days">–</div><div class="l">Days played</div></div>
+    <div class="stat"><div class="v" id="rounds">–</div><div class="l">Games won</div></div>
+  </div>
+
+  <section>
+    <h2>🔤 Letters (A–Z)</h2>
+    <div class="lgrid" id="letters"></div>
+    <div class="legend">
+      <span><span class="dot" style="background:#c9f2d0"></span>Knows it</span>
+      <span><span class="dot" style="background:#ffe9c2"></span>Learning</span>
+      <span><span class="dot" style="background:#eef1f5"></span>Not yet</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>🔢 Numbers (1–20)</h2>
+    <div class="ngrid" id="numbers"></div>
+  </section>
+
+  <section>
+    <h2>✨ New this week</h2>
+    <div class="chips" id="newweek"></div>
+  </section>
+
+  <section>
+    <h2>🗣️ What to listen for in his speech</h2>
+    <ul class="tips" id="tips"></ul>
+  </section>
+
+  <section>
+    <h2>🏆 Stickers earned</h2>
+    <div class="stickers" id="stickers"></div>
+  </section>
+</div>
+
+<script src="data.js"></script>
+<script>
+'use strict';
+const store = (() => {
+  try { return Object.assign({ items:{}, days:{}, stickers:[], learnedLog:[], totalRounds:0 },
+    JSON.parse(localStorage.getItem('abc123.v1') || '{}')); }
+  catch (e) { return { items:{}, days:{}, stickers:[], learnedLog:[], totalRounds:0 }; }
+})();
+const MASTERED = 4;
+const it = id => store.items[id] || { mastery: 0 };
+const fmt = secs => {
+  if (!secs) return '0m';
+  if (secs < 3600) return Math.round(secs / 60) + 'm';
+  return (secs / 3600).toFixed(1) + 'h';
+};
+const today = new Date().toISOString().slice(0, 10);
+const totalSecs = Object.values(store.days).reduce((a, b) => a + b, 0);
+document.getElementById('today').textContent = fmt(store.days[today] || 0);
+document.getElementById('total').textContent = fmt(totalSecs);
+document.getElementById('days').textContent = Object.keys(store.days).length;
+document.getElementById('rounds').textContent = store.totalRounds || 0;
+
+const lg = document.getElementById('letters');
+'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach(L => {
+  const m = it('L:' + L).mastery;
+  const d = document.createElement('div');
+  d.className = 'cell ' + (m >= MASTERED ? 'mastered' : m > 0 ? 'learning' : '');
+  d.textContent = L;
+  lg.appendChild(d);
+});
+const ng = document.getElementById('numbers');
+for (let n = 1; n <= 20; n++) {
+  const m = it('N:' + n).mastery;
+  const d = document.createElement('div');
+  d.className = 'cell ' + (m >= MASTERED ? 'mastered' : m > 0 ? 'learning' : '');
+  d.textContent = n;
+  ng.appendChild(d);
+}
+
+const weekAgo = new Date(Date.now() - 7 * 864e5).toISOString().slice(0, 10);
+const recent = (store.learnedLog || []).filter(e => e.day >= weekAgo);
+const nw = document.getElementById('newweek');
+if (recent.length) {
+  recent.slice(-14).forEach(e => {
+    const c = document.createElement('span');
+    c.className = 'chip'; c.textContent = e.label;
+    nw.appendChild(c);
+  });
+} else {
+  nw.innerHTML = '<span class="muted">Nothing new yet this week — keep playing!</span>';
+}
+
+// Speech tips based on what he has learned.
+const tips = [];
+const masteredLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').filter(L => it('L:' + L).mastery >= MASTERED);
+const learningLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').filter(L => { const m = it('L:' + L).mastery; return m > 0 && m < MASTERED; });
+const masteredNums = [];
+for (let n = 1; n <= 20; n++) if (it('N:' + n).mastery >= MASTERED) masteredNums.push(n);
+masteredLetters.slice(-3).forEach(L => {
+  const w = LETTERS[L].words[0];
+  tips.push('He knows <b>' + L + '</b> now — point at a ' + w[0] + ' ' + w[1] + ' and ask “what letter does ' + w[0] + ' start with?”');
+});
+if (learningLetters.length) {
+  const L = learningLetters[0];
+  tips.push('He is working on <b>' + L + '</b> — say “' + L + ' says ' + LETTERS[L].sound + '” together during the day.');
+}
+if (masteredNums.length) {
+  const top = Math.max(...masteredNums);
+  tips.push('He can count to about <b>' + top + '</b> — count stairs, snacks, or toys together up to ' + top + '.');
+}
+if (!tips.length) tips.push('Once he starts playing, tips will appear here — e.g. sounds to practice and words to point out.');
+document.getElementById('tips').innerHTML = tips.map(t => '<li>' + t + '</li>').join('');
+
+document.getElementById('stickers').textContent = (store.stickers || []).join(' ') || '—';
+</script>
+</body>
+</html>

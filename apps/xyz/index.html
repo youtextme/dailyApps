@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>XYZ</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+  :root { --ink:#1c1917; --x:#0f766e; --y:#b45309; --z:#1d4ed8; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; color: var(--ink);
+    font-family: "Source Sans 3", Georgia, serif;
+    background:
+      radial-gradient(900px 480px at 8% 0%, #99f6e4 0%, transparent 50%),
+      radial-gradient(700px 420px at 100% 10%, #93c5fd 0%, transparent 45%),
+      #fff7ed;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 2rem 1.25rem;
+  }
+  h1 { font-family: Fraunces, Georgia, serif; font-size: clamp(2.5rem, 8vw, 4.5rem); margin: 0 0 0.4rem; }
+  p { margin: 0 0 1.25rem; }
+  .row { display: flex; gap: 0.6rem; flex-wrap: wrap; justify-content: center; }
+  button {
+    font: inherit; font-weight: 700; min-width: 4.2rem; padding: 0.9rem 1.1rem;
+    border: 2px solid var(--ink); border-radius: 0.4rem; cursor: pointer; background: #fff;
+  }
+  button[data-k="X"].on { background: var(--x); color: #fff; }
+  button[data-k="Y"].on { background: var(--y); color: #fff; }
+  button[data-k="Z"].on { background: var(--z); color: #fff; }
+  #out {
+    margin-top: 1.25rem; min-height: 2rem; font-family: Fraunces, Georgia, serif;
+    font-size: 1.75rem; letter-spacing: 0.12em;
+  }
+</style>
+</head>
+<body data-dailyapps-ready="1">
+  <h1>XYZ</h1>
+  <p>Toggle letters. The line is whatever you leave on.</p>
+  <div class="row">
+    <button type="button" data-k="X" class="on" aria-pressed="true">X</button>
+    <button type="button" data-k="Y" class="on" aria-pressed="true">Y</button>
+    <button type="button" data-k="Z" class="on" aria-pressed="true">Z</button>
+  </div>
+  <p id="out" aria-live="polite">XYZ</p>
+<script>
+function paint() {
+  const on = [...document.querySelectorAll("button[data-k]")].filter((b) => b.classList.contains("on")).map((b) => b.dataset.k);
+  document.getElementById("out").textContent = on.length ? on.join("") : "(empty)";
+}
+document.querySelectorAll("button[data-k]").forEach((b) => {
+  b.addEventListener("click", () => {
+    b.classList.toggle("on");
+    b.setAttribute("aria-pressed", b.classList.contains("on") ? "true" : "false");
+    paint();
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>What is dailyApps</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+  :root { --ink:#1c1917; --accent:#0f766e; --paper:#fff7ed; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; color: var(--ink);
+    font-family: "Source Sans 3", Georgia, serif;
+    background:
+      radial-gradient(1100px 520px at 0% -10%, #99f6e4 0%, transparent 55%),
+      radial-gradient(800px 480px at 100% 0%, #fdba74 0%, transparent 48%),
+      var(--paper);
+  }
+  main { max-width: 40rem; margin: 0 auto; padding: 3rem 1.25rem 4rem; }
+  h1 { font-family: Fraunces, Georgia, serif; font-size: clamp(2.4rem, 7vw, 4rem); margin: 0 0 0.5rem; }
+  .lead { font-size: 1.15rem; max-width: 34rem; }
+  ol { padding-left: 1.2rem; }
+  li { margin: 0.6rem 0; }
+  button {
+    font: inherit; font-weight: 600; padding: 0.85rem 1.4rem;
+    background: var(--accent); color: #fff; border: 0; border-radius: 0.35rem;
+    cursor: pointer; margin-top: 1rem;
+  }
+  button:hover { filter: brightness(1.08); }
+  #stage { min-height: 3.5rem; margin-top: 1.25rem; padding: 1rem 1.1rem; background: #fff; border: 2px solid var(--ink); border-radius: 0.5rem; }
+  a { color: var(--accent); }
+</style>
+</head>
+<body data-dailyapps-ready="1">
+<main>
+  <h1>What is dailyApps</h1>
+  <p class="lead">A public shelf of tiny interactive pages. You post a job in Slack <strong>#dailyapps</strong>, walk away, and the agent ships a page here.</p>
+  <ol>
+    <li>Open Slack channel <code>#dailyapps</code> and @mention OpenClaw with one job.</li>
+    <li>That mention starts a <em>thread session</em>. Follow-ups in the thread continue the same job — no extra mention needed.</li>
+    <li>A new top-level @mention is a different job and can run in parallel.</li>
+    <li>When blocked, OpenClaw asks in the thread. You answer. The project never “ends”; the channel is the session.</li>
+  </ol>
+  <p>Repo: <a href="https://github.com/youtextme/dailyApps">youtextme/dailyApps</a>. Live: <a href="https://youtextme.github.io/dailyApps/">GitHub Pages</a>.</p>
+  <button type="button" id="next">Show next step</button>
+  <p id="stage" aria-live="polite">Press the button to walk the loop.</p>
+</main>
+<script>
+const steps = [
+  "1. @OpenClaw in #dailyapps with one outcome (not a pile of tasks).",
+  "2. Walk away. OpenClaw works in that thread and replies with evidence.",
+  "3. If it needs a decision, it asks here. Answer in the thread.",
+  "4. New idea? New top-level @mention — parallel session, same channel.",
+  "Loop complete. The channel stays. The project stays."
+];
+let i = 0;
+document.getElementById("next").addEventListener("click", () => {
+  document.getElementById("stage").textContent = steps[i % steps.length];
+  i += 1;
+  document.getElementById("next").textContent = i >= steps.length ? "Replay loop" : "Show next step";
+});
+</script>
+</body>
+</html>

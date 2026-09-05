@@ -3,6 +3,19 @@ Thumbs.db
 *.log
 .idea/
 .vscode/
+IDENTITY.md
+SOUL.md
+USER.md
+TOOLS.md
+
+# Secrets — never commit real values
+.env
+.env.local
+.env.*.local
+.envrc
+secrets/
+
+# Python / tireless loop engine
 .env
 .venv/
 venv/

@@ -1,0 +1,5 @@
+{
+  "name": "dailyApps",
+  "install": "chmod +x scripts/check-secrets.sh 2>/dev/null || true",
+  "terminals": []
+}
