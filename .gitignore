@@ -14,3 +14,18 @@ TOOLS.md
 .env.*.local
 .envrc
 secrets/
+
+# Python / tireless loop engine
+.env
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+dist/
+build/
+data/sessions/
+data/gists/
+.coverage
+htmlcov/
