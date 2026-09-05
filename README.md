@@ -43,6 +43,17 @@ That is one session, not three.
 2. Agent uses the same review bar as Cursor (Outcome OS, Ralph-sized stories, code review, verify)
 3. Page lands in `apps/<slug>/` and deploys via GitHub Pages
 
+## Secrets (Slack, GitHub, LLM keys)
+
+All agents (Cursor IDE, Cursor Cloud, Devin) use the same variable names from `.env.example`. Values live in `.env.local` locally and in each platform’s secrets dashboard — never in git.
+
+```bash
+cp .env.example .env.local   # fill Slack bot/app tokens + signing secret
+./scripts/check-secrets.sh
+```
+
+See [docs/SECRETS.md](docs/SECRETS.md) for Slack app setup and Cursor/Devin registration.
+
 ## Ops
 
 ```powershell
